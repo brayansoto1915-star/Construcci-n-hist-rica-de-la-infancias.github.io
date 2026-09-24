@@ -1,0 +1,808 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Construcción histórica de las infancias</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,500&family=Karla:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper: #FBF7EF;
+    --paper-raised: #F3EDDF;
+    --ink: #2C2820;
+    --ink-soft: #6B6250;
+    --line: #E1D6BC;
+    --gold: #9C7A34;
+    --gold-soft: #C7A45F;
+
+    --antigua: #A6552D;
+    --media: #2B3A55;
+    --moderna: #3F5C3A;
+  }
+
+  *{ box-sizing: border-box; }
+  html{ scroll-behavior: smooth; }
+
+  body{
+    margin:0;
+    background: var(--paper);
+    background-image: radial-gradient(circle at 15% 0%, #F7F1E2 0%, var(--paper) 45%);
+    color: var(--ink);
+    font-family: 'Karla', sans-serif;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    padding-bottom: 90px;
+  }
+
+  h1, h2, h3, .display{
+    font-family: 'Cormorant Garamond', serif;
+    font-weight: 500;
+    color: var(--ink);
+    margin: 0;
+  }
+
+  a{ color: var(--gold); }
+
+  :focus-visible{ outline: 2px solid var(--gold); outline-offset: 3px; }
+
+  .wrap{ max-width: 1040px; margin: 0 auto; padding: 0 30px; }
+
+  [contenteditable="true"]{
+    outline: 1px dashed var(--gold-soft);
+    outline-offset: 4px;
+    border-radius: 2px;
+    cursor: text;
+  }
+  [contenteditable="true"]:focus{ outline: 1.5px solid var(--gold); background: #FFFDF7; }
+
+  /* ---------- Hero ---------- */
+
+  header.hero{ position: relative; padding: 88px 0 64px; border-bottom: 1px solid var(--line); overflow: hidden; }
+  .hero-motif{ position: absolute; top: 30px; right: 0; width: 260px; height: 260px; opacity: 0.9; }
+
+  .kicker{ font-size: 12.5px; letter-spacing: 0.02em; color: var(--gold); margin-bottom: 20px; }
+  .kicker span + span{ margin-left: 12px; padding-left: 12px; border-left: 1px solid var(--line); color: var(--ink-soft); }
+
+  h1.title{ font-size: clamp(38px, 5.6vw, 60px); line-height: 1.06; max-width: 15ch; font-style: italic; }
+
+  .presentation{ margin-top: 28px; max-width: 62ch; font-size: 18px; color: var(--ink-soft); }
+  .presentation p{ margin: 0 0 14px; }
+  .presentation p:last-child{ margin-bottom: 0; }
+
+  .flourish{ display:flex; align-items:center; gap: 14px; margin: 50px 0 0; color: var(--gold-soft); }
+  .flourish svg{ flex-shrink:0; }
+  .flourish::after{ content:''; flex:1; height:1px; background: var(--line); }
+
+  /* ---------- Team ---------- */
+
+  section.team{ padding: 56px 0; border-bottom: 1px solid var(--line); }
+
+  .section-head{ display:flex; align-items: baseline; justify-content: space-between; gap: 20px; margin-bottom: 30px; flex-wrap: wrap; }
+  .section-head h2{ font-size: 30px; font-style: italic; }
+
+  .edit-hint{ font-size: 13px; color: var(--gold); display: none; }
+  body.edit-mode .edit-hint{ display: block; }
+
+  .team-grid{ display:grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 20px; }
+
+  .member{
+    background: var(--paper-raised);
+    border: 1px solid var(--line);
+    padding: 24px 18px;
+    text-align: center;
+  }
+
+  .avatar-wrap{ position:relative; width: 68px; height:68px; margin: 0 auto 14px; }
+  .avatar{
+    width: 68px; height: 68px; border-radius: 50%;
+    background: var(--ink) center/cover no-repeat;
+    color: var(--paper);
+    display:flex; align-items:center; justify-content:center;
+    font-family: 'Cormorant Garamond', serif; font-size: 21px;
+  }
+  .photo-btn{
+    display:none;
+    position:absolute; bottom:-2px; right:-2px;
+    width: 24px; height:24px; border-radius:50%;
+    background: var(--gold); color:#fff; border: 2px solid var(--paper-raised);
+    font-size: 11px; align-items:center; justify-content:center; cursor:pointer;
+  }
+  body.edit-mode .photo-btn{ display:flex; }
+
+  .role-pill{
+    appearance: none;
+    background: var(--paper);
+    border: 1px solid var(--line);
+    border-radius: 20px;
+    padding: 9px 16px;
+    font-family: 'Karla', sans-serif;
+    font-size: 12.5px;
+    color: var(--ink);
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    max-width: 100%;
+    transition: border-color .15s ease, background .15s ease;
+  }
+  .role-pill:hover{ border-color: var(--gold-soft); background: var(--paper-raised); }
+  .role-pill .role-label{ overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .role-pill .role-arrow{ color: var(--gold); flex-shrink:0; }
+
+  /* ---------- Member modal ---------- */
+
+  .member-modal-overlay{
+    display:none;
+    position: fixed; inset: 0; z-index: 200;
+    background: rgba(44,40,32,0.5);
+    backdrop-filter: blur(2px);
+    align-items: center; justify-content: center;
+    padding: 20px;
+  }
+  .member-modal-overlay.open{ display:flex; animation: fade .2s ease; }
+
+  .member-modal{
+    position: relative;
+    background: var(--paper);
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    padding: 36px 32px 28px;
+    max-width: 380px;
+    width: 100%;
+    max-height: 86vh;
+    text-align: center;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.22);
+    display: flex;
+    flex-direction: column;
+  }
+
+  .modal-close{
+    position:absolute; top:12px; right:12px;
+    width: 28px; height:28px; border-radius:50%;
+    border:none; background: var(--paper-raised); color: var(--ink-soft);
+    font-size: 16px; cursor:pointer; line-height:1;
+    flex-shrink: 0;
+  }
+  .modal-close:hover{ color: var(--ink); }
+
+  .modal-avatar{
+    width: 96px; height:96px; border-radius:50%;
+    background: var(--ink) center/cover no-repeat;
+    margin: 0 auto 18px;
+    flex-shrink: 0;
+  }
+
+  .modal-name{ font-family:'Cormorant Garamond', serif; font-style: italic; font-size: 23px; margin-bottom: 4px; flex-shrink: 0; }
+  .modal-role{ font-size: 13px; color: var(--gold); margin-bottom: 18px; letter-spacing: 0.01em; flex-shrink: 0; }
+
+  .modal-bio-wrap{
+    flex: 1 1 auto;
+    min-height: 0;
+    height: 160px;
+    display: flex;
+    gap: 8px;
+  }
+
+  .modal-bio-scroll{
+    position: relative;
+    flex: 1 1 auto;
+    min-width: 0;
+    height: 100%;
+  }
+  .modal-bio-scroll::before{
+    content:'';
+    position:absolute; top:0; left:0; right:6px; height:14px;
+    background: linear-gradient(var(--paper), transparent);
+    pointer-events:none; z-index:1;
+  }
+  .modal-bio-scroll::after{
+    content:'';
+    position:absolute; bottom:0; left:0; right:6px; height:14px;
+    background: linear-gradient(transparent, var(--paper));
+    pointer-events:none; z-index:1;
+  }
+
+  .modal-bio{
+    font-size: 15px; color: var(--ink-soft); text-align: left;
+    height: 100%;
+    overflow-y: auto;
+    padding: 2px 6px 2px 0;
+    scrollbar-width: thin;
+    scrollbar-color: var(--gold-soft) transparent;
+  }
+  .modal-bio::-webkit-scrollbar{ width: 5px; }
+  .modal-bio::-webkit-scrollbar-thumb{ background: var(--gold-soft); border-radius: 3px; }
+  .modal-bio::-webkit-scrollbar-track{ background: transparent; }
+
+  .modal-scroll-btns{
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    flex-shrink: 0;
+  }
+  .scroll-btn{
+    width: 26px; height: 26px;
+    border-radius: 50%;
+    border: 1px solid var(--line);
+    background: var(--paper-raised);
+    color: var(--gold);
+    font-size: 11px;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: background .15s ease, border-color .15s ease, opacity .15s ease;
+  }
+  .scroll-btn:hover:not(:disabled){ background: var(--paper); border-color: var(--gold-soft); }
+  .scroll-btn:disabled{ opacity: 0.28; cursor: default; }
+
+  /* ---------- Tabs ---------- */
+
+  nav.tabs{ position: sticky; top: 0; background: var(--paper); border-bottom: 1px solid var(--line); z-index: 10; }
+  .tabs-inner{ display:flex; gap: 4px; overflow-x: auto; }
+  .tab-btn{
+    appearance: none; background:none; border:none; border-bottom: 2px solid transparent;
+    font-family: 'Karla', sans-serif; font-size: 14px; color: var(--ink-soft);
+    padding: 18px 6px; margin-right: 28px; cursor: pointer; white-space: nowrap;
+  }
+  .tab-btn:hover{ color: var(--ink); }
+  .tab-btn.active{ color: var(--ink); border-bottom-color: var(--gold); }
+  .tab-btn .num{ font-family:'Cormorant Garamond', serif; font-style: italic; color: var(--gold-soft); margin-right: 8px; }
+
+  main{ padding: 54px 0 20px; }
+  .panel{ display:none; }
+  .panel.active{ display:block; animation: fade .35s ease; }
+  @keyframes fade{ from{ opacity:0; transform: translateY(4px);} to{ opacity:1; transform:none;} }
+
+  .placeholder-panel{ padding: 60px 0; color: var(--ink-soft); max-width: 48ch; }
+  .placeholder-panel h3{ font-size: 24px; margin-bottom: 10px; color: var(--ink); font-style: italic; }
+
+  .intro{ max-width: 66ch; font-size: 17px; color: var(--ink-soft); margin-bottom: 46px; }
+  h2.panel-title{ font-size: 32px; margin-bottom: 8px; font-style: italic; }
+  .panel-sub{ color: var(--gold); font-size: 14px; margin-bottom: 36px; letter-spacing: 0.01em; }
+
+  /* Timeline */
+
+  .timeline-nav{ display:flex; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); margin-bottom: 36px; }
+  .era-btn{ flex:1; appearance:none; background:none; border:none; border-right: 1px solid var(--line); text-align:left; padding: 20px 18px; cursor:pointer; font-family: inherit; }
+  .era-btn:last-child{ border-right:none; }
+  .era-btn .era-period{ font-size: 12px; color: var(--ink-soft); margin-bottom: 6px; }
+  .era-btn .era-name{ font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 20px; color: var(--ink); }
+  .era-btn .era-bar{ height: 2px; width: 0; margin-top: 14px; transition: width .25s ease; }
+  .era-btn.active .era-bar{ width: 100%; }
+  .era-btn[data-era="antigua"] .era-bar{ background: var(--antigua); }
+  .era-btn[data-era="media"] .era-bar{ background: var(--media); }
+  .era-btn[data-era="moderna"] .era-bar{ background: var(--moderna); }
+
+  .era-panel{ display:none; }
+  .era-panel.active{ display:block; animation: fade .3s ease; }
+  .era-head{ display:flex; align-items:center; gap: 14px; margin-bottom: 24px; }
+  .era-dot{ width:10px; height:10px; border-radius:50%; flex-shrink:0; }
+  .era-panel[data-era="antigua"] .era-dot{ background: var(--antigua); }
+  .era-panel[data-era="media"] .era-dot{ background: var(--media); }
+  .era-panel[data-era="moderna"] .era-dot{ background: var(--moderna); }
+  .era-head h3{ font-size: 25px; font-style: italic; }
+  .era-head .era-range{ font-size: 14px; color: var(--ink-soft); }
+
+  .era-grid{ display:grid; grid-template-columns: repeat(2, 1fr); gap: 30px 42px; }
+  @media (max-width: 720px){
+    .era-grid{ grid-template-columns: 1fr; }
+    .timeline-nav{ flex-direction: column; }
+    .era-btn{ border-right:none; border-bottom: 1px solid var(--line); }
+    .era-btn:last-child{ border-bottom:none; }
+  }
+
+  .era-field h4{ font-size: 12px; color: var(--gold); margin: 0 0 8px; font-weight: 600; letter-spacing: 0.01em; }
+  .era-field p, .era-field ul{ margin:0; font-size: 15px; color: var(--ink); }
+  .era-field ul{ padding-left: 18px; }
+  .era-field li{ margin-bottom: 6px; }
+  .era-field.full{ grid-column: 1 / -1; }
+  .era-field.full p{ background: var(--paper-raised); border-left: 3px solid var(--gold); padding: 14px 18px; font-size: 15px; color: var(--ink-soft); }
+
+  /* Closing + references */
+
+  .closing{ margin-top: 58px; padding-top: 42px; border-top: 1px solid var(--line); max-width: 68ch; }
+  .closing h3{ font-size: 21px; margin-bottom: 14px; font-style: italic; }
+  .closing p{ color: var(--ink-soft); font-size: 16px; }
+
+  .references{ margin-top: 46px; padding-top: 32px; border-top: 1px solid var(--line); }
+  .references h3{ font-size: 19px; margin-bottom: 16px; font-style: italic; }
+  .references ol{ padding-left: 20px; color: var(--ink-soft); font-size: 14.5px; }
+  .references li{ margin-bottom: 12px; }
+
+  footer{ border-top: 1px solid var(--line); padding: 28px 0; font-size: 13px; color: var(--ink-soft); }
+
+  /* ---------- Edit toolbar ---------- */
+
+  .edit-toolbar{
+    position: fixed; bottom: 22px; right: 22px; z-index: 100;
+    display:flex; gap: 8px; align-items:center;
+    background: var(--ink); padding: 8px; border-radius: 30px;
+    box-shadow: 0 6px 24px rgba(0,0,0,0.18);
+  }
+  .edit-toolbar button{
+    appearance:none; border:none; cursor:pointer; font-family:'Karla',sans-serif;
+    font-size: 13px; padding: 10px 16px; border-radius: 22px; white-space:nowrap;
+  }
+  .btn-primary{ background: var(--gold); color:#fff; }
+  .btn-ghost{ background: transparent; color: #EDE6D4; display:none; }
+  body.edit-mode .btn-ghost{ display:inline-block; }
+
+  .toast{
+    position: fixed; bottom: 78px; right: 22px; z-index: 101;
+    background: var(--ink); color:#fff; padding: 10px 18px; border-radius: 6px;
+    font-size: 13px; opacity:0; transform: translateY(6px); transition: all .25s ease; pointer-events:none;
+  }
+  .toast.show{ opacity:1; transform:none; }
+
+  @media (prefers-reduced-motion: reduce){ *{ animation:none !important; transition:none !important; } }
+  @media (max-width: 640px){ .edit-toolbar{ left:16px; right:16px; justify-content:center; flex-wrap:wrap; } }
+</style>
+</head>
+<body>
+
+<div id="siteRoot">
+
+<header class="hero">
+  <svg class="hero-motif" viewBox="0 0 240 240" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <circle cx="90" cy="90" r="62" stroke="#A6552D" stroke-width="1.4" opacity="0.55"/>
+    <circle cx="130" cy="120" r="62" stroke="#2B3A55" stroke-width="1.4" opacity="0.55"/>
+    <circle cx="105" cy="165" r="62" stroke="#3F5C3A" stroke-width="1.4" opacity="0.55"/>
+  </svg>
+  <div class="wrap">
+    <div class="kicker">
+      <span data-editable contenteditable="false">UNAD · Escuela de Ciencias de la Educación</span>
+      <span data-editable contenteditable="false">Curso: Infancias, Historias y Perspectivas</span>
+    </div>
+    <h1 class="title" data-editable contenteditable="false">Construcción histórica de las infancias</h1>
+    <div class="presentation" data-editable contenteditable="false">
+      <p>Esta página reúne el trabajo colaborativo de nuestro grupo a lo largo del curso <em>Infancias: Historias y Perspectivas</em>. Aquí documentamos el proceso de análisis y reflexión sobre las transformaciones históricas, sociales y culturales que han moldeado la manera en que la sociedad ha comprendido a los niños, las niñas y las infancias.</p>
+      <p>El sitio se construye de forma progresiva: en cada reto del curso incorporamos nuevas evidencias y reflexiones, partiendo de la construcción histórica de las infancias hasta llegar a las voces actuales que reclaman su reconocimiento como sujetos de derechos.</p>
+    </div>
+    <div class="flourish">
+      <svg width="26" height="14" viewBox="0 0 26 14" fill="none"><path d="M1 7C6 1 10 1 13 7C16 13 20 13 25 7" stroke="#C7A45F" stroke-width="1.2"/></svg>
+    </div>
+  </div>
+</header>
+
+<section class="team">
+  <div class="wrap">
+    <div class="section-head">
+      <h2 data-editable contenteditable="false">Integrantes del grupo</h2>
+      <div class="edit-hint">Modo edición activo — abre la tarjeta de cada integrante (foto + rol) para escribir su nombre, rol y descripción.</div>
+    </div>
+    <div class="team-grid">
+      <div class="member">
+        <div class="avatar-wrap">
+          <div class="avatar" data-photo>NN</div>
+          <button class="photo-btn" type="button" title="Cambiar foto">✎</button>
+          <input type="file" accept="image/*" class="photo-input" hidden>
+        </div>
+        <button class="role-pill" type="button" data-modal-target="modal-1">
+          <span class="role-label">Dinamizador del proceso</span><span class="role-arrow">›</span>
+        </button>
+      </div>
+      <div class="member">
+        <div class="avatar-wrap">
+          <div class="avatar" data-photo>NN</div>
+          <button class="photo-btn" type="button" title="Cambiar foto">✎</button>
+          <input type="file" accept="image/*" class="photo-input" hidden>
+        </div>
+        <button class="role-pill" type="button" data-modal-target="modal-2">
+          <span class="role-label">Relator</span><span class="role-arrow">›</span>
+        </button>
+      </div>
+      <div class="member">
+        <div class="avatar-wrap">
+          <div class="avatar" data-photo>NN</div>
+          <button class="photo-btn" type="button" title="Cambiar foto">✎</button>
+          <input type="file" accept="image/*" class="photo-input" hidden>
+        </div>
+        <button class="role-pill" type="button" data-modal-target="modal-3">
+          <span class="role-label">Utilero</span><span class="role-arrow">›</span>
+        </button>
+      </div>
+      <div class="member">
+        <div class="avatar-wrap">
+          <div class="avatar" data-photo>NN</div>
+          <button class="photo-btn" type="button" title="Cambiar foto">✎</button>
+          <input type="file" accept="image/*" class="photo-input" hidden>
+        </div>
+        <button class="role-pill" type="button" data-modal-target="modal-4">
+          <span class="role-label">Veedor de la autenticidad</span><span class="role-arrow">›</span>
+        </button>
+      </div>
+      <div class="member">
+        <div class="avatar-wrap">
+          <div class="avatar" data-photo>NN</div>
+          <button class="photo-btn" type="button" title="Cambiar foto">✎</button>
+          <input type="file" accept="image/*" class="photo-input" hidden>
+        </div>
+        <button class="role-pill" type="button" data-modal-target="modal-5">
+          <span class="role-label">Evaluador</span><span class="role-arrow">›</span>
+        </button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Member detail modals -->
+<div class="member-modal-overlay" id="modal-1">
+  <div class="member-modal">
+    <button class="modal-close" type="button">×</button>
+    <div class="modal-avatar"></div>
+    <div class="modal-name" data-editable contenteditable="false">Nombre completo</div>
+    <div class="modal-role" data-editable contenteditable="false">Dinamizador del proceso</div>
+    <div class="modal-bio-wrap"><div class="modal-bio-scroll"><div class="modal-bio" data-editable contenteditable="false">Breve descripción personal y académica del integrante.</div></div><div class="modal-scroll-btns"><button class="scroll-btn scroll-up" type="button" title="Subir">▲</button><button class="scroll-btn scroll-down" type="button" title="Bajar">▼</button></div></div>
+  </div>
+</div>
+<div class="member-modal-overlay" id="modal-2">
+  <div class="member-modal">
+    <button class="modal-close" type="button">×</button>
+    <div class="modal-avatar"></div>
+    <div class="modal-name" data-editable contenteditable="false">Nombre completo</div>
+    <div class="modal-role" data-editable contenteditable="false">Relator</div>
+    <div class="modal-bio-wrap"><div class="modal-bio-scroll"><div class="modal-bio" data-editable contenteditable="false">Breve descripción personal y académica del integrante.</div></div><div class="modal-scroll-btns"><button class="scroll-btn scroll-up" type="button" title="Subir">▲</button><button class="scroll-btn scroll-down" type="button" title="Bajar">▼</button></div></div>
+  </div>
+</div>
+<div class="member-modal-overlay" id="modal-3">
+  <div class="member-modal">
+    <button class="modal-close" type="button">×</button>
+    <div class="modal-avatar"></div>
+    <div class="modal-name" data-editable contenteditable="false">Nombre completo</div>
+    <div class="modal-role" data-editable contenteditable="false">Utilero</div>
+    <div class="modal-bio-wrap"><div class="modal-bio-scroll"><div class="modal-bio" data-editable contenteditable="false">Breve descripción personal y académica del integrante.</div></div><div class="modal-scroll-btns"><button class="scroll-btn scroll-up" type="button" title="Subir">▲</button><button class="scroll-btn scroll-down" type="button" title="Bajar">▼</button></div></div>
+  </div>
+</div>
+<div class="member-modal-overlay" id="modal-4">
+  <div class="member-modal">
+    <button class="modal-close" type="button">×</button>
+    <div class="modal-avatar"></div>
+    <div class="modal-name" data-editable contenteditable="false">Nombre completo</div>
+    <div class="modal-role" data-editable contenteditable="false">Veedor de la autenticidad</div>
+    <div class="modal-bio-wrap"><div class="modal-bio-scroll"><div class="modal-bio" data-editable contenteditable="false">Breve descripción personal y académica del integrante.</div></div><div class="modal-scroll-btns"><button class="scroll-btn scroll-up" type="button" title="Subir">▲</button><button class="scroll-btn scroll-down" type="button" title="Bajar">▼</button></div></div>
+  </div>
+</div>
+<div class="member-modal-overlay" id="modal-5">
+  <div class="member-modal">
+    <button class="modal-close" type="button">×</button>
+    <div class="modal-avatar"></div>
+    <div class="modal-name" data-editable contenteditable="false">Nombre completo</div>
+    <div class="modal-role" data-editable contenteditable="false">Evaluador</div>
+    <div class="modal-bio-wrap"><div class="modal-bio-scroll"><div class="modal-bio" data-editable contenteditable="false">Breve descripción personal y académica del integrante.</div></div><div class="modal-scroll-btns"><button class="scroll-btn scroll-up" type="button" title="Subir">▲</button><button class="scroll-btn scroll-down" type="button" title="Bajar">▼</button></div></div>
+  </div>
+</div>
+
+<nav class="tabs">
+  <div class="wrap tabs-inner">
+    <button class="tab-btn active" data-tab="reto2"><span class="num">I</span><span class="label" data-editable contenteditable="false">Construcción histórica de las infancias</span></button>
+    <button class="tab-btn" data-tab="reto3"><span class="num">II</span><span class="label" data-editable contenteditable="false">Infancias en perspectiva</span></button>
+    <button class="tab-btn" data-tab="reto4"><span class="num">III</span><span class="label" data-editable contenteditable="false">Comprendiendo las realidades y desafíos</span></button>
+    <button class="tab-btn" data-tab="reto5"><span class="num">IV</span><span class="label" data-editable contenteditable="false">Voces para la transformación</span></button>
+  </div>
+</nav>
+
+<main class="wrap">
+
+  <section class="panel active" id="panel-reto2">
+    <h2 class="panel-title" data-editable contenteditable="false">Construcción histórica de las infancias</h2>
+    <p class="panel-sub" data-editable contenteditable="false">Línea de tiempo interactiva · Edad Antigua, Edad Media y Edad Moderna</p>
+
+    <p class="intro" data-editable contenteditable="false">La infancia no ha sido comprendida siempre de la misma manera: es una construcción social que ha cambiado según las condiciones económicas, religiosas y filosóficas de cada época. Exploren cada periodo para conocer cómo se concebía a los niños y las niñas, qué autores marcaron el pensamiento de la época y qué transformaciones sentaron las bases del reconocimiento actual de la infancia como sujeto de derechos.</p>
+
+    <div class="timeline-nav">
+      <button class="era-btn active" data-era="antigua">
+        <div class="era-period" data-editable contenteditable="false">Siglo VIII a.C. — 476 d.C.</div>
+        <div class="era-name" data-editable contenteditable="false">Edad Antigua</div>
+        <div class="era-bar"></div>
+      </button>
+      <button class="era-btn" data-era="media">
+        <div class="era-period" data-editable contenteditable="false">476 — 1453 d.C.</div>
+        <div class="era-name" data-editable contenteditable="false">Edad Media</div>
+        <div class="era-bar"></div>
+      </button>
+      <button class="era-btn" data-era="moderna">
+        <div class="era-period" data-editable contenteditable="false">Siglos XV — XVIII</div>
+        <div class="era-name" data-editable contenteditable="false">Edad Moderna</div>
+        <div class="era-bar"></div>
+      </button>
+    </div>
+
+    <div class="era-panel active" data-era="antigua">
+      <div class="era-head"><span class="era-dot"></span><div><h3 data-editable contenteditable="false">Edad Antigua</h3><div class="era-range" data-editable contenteditable="false">Grecia y Roma, aproximadamente siglo VIII a.C. – 476 d.C.</div></div></div>
+      <div class="era-grid">
+        <div class="era-field" data-editable contenteditable="false"><h4>Contexto social</h4><p>La familia se organizaba bajo la <em>patria potestas</em>: el padre tenía autoridad absoluta sobre los hijos, incluida la decisión sobre su vida. La mortalidad infantil era muy alta y, en culturas como Esparta, se practicaba la selección de los recién nacidos según su aptitud física.</p></div>
+        <div class="era-field" data-editable contenteditable="false"><h4>Contexto cultural</h4><p>No existía una noción diferenciada de infancia como etapa con necesidades propias. El niño era visto como un "adulto en miniatura" o como un ser incompleto en camino hacia la razón y la ciudadanía.</p></div>
+        <div class="era-field" data-editable contenteditable="false"><h4>Concepciones de niño, niña y niñez</h4><p>El valor del niño dependía de su futura utilidad para la familia y el Estado. Existían marcadas diferencias según el sexo: los niños se preparaban para la vida pública, militar o cívica, mientras las niñas se formaban para el rol doméstico.</p></div>
+        <div class="era-field" data-editable contenteditable="false"><h4>Autores y aportes</h4><ul>
+          <li><strong>Platón</strong> — propuso en <em>La República</em> una educación organizada y dirigida por el Estado.</li>
+          <li><strong>Aristóteles</strong> — reflexionó sobre las etapas del desarrollo humano y el papel de la razón en la formación del carácter.</li>
+          <li><strong>Quintiliano</strong> — desarrolló en Roma principios pedagógicos centrados en la formación retórica y moral del futuro ciudadano.</li>
+        </ul></div>
+        <div class="era-field full" data-editable contenteditable="false"><h4>Transformaciones e hitos relevantes</h4><p>Surgimiento de instituciones educativas como el gimnasio griego; consolidación de la patria potestad como institución jurídica romana.</p></div>
+        <div class="era-field full" data-editable contenteditable="false"><h4>Reflexión crítica</h4><p>En esta época no existía un reconocimiento de derechos propios de la niñez; el niño carecía de voz y su lugar en la sociedad se definía exclusivamente por su utilidad futura para la familia y el Estado.</p></div>
+      </div>
+    </div>
+
+    <div class="era-panel" data-era="media">
+      <div class="era-head"><span class="era-dot"></span><div><h3 data-editable contenteditable="false">Edad Media</h3><div class="era-range" data-editable contenteditable="false">476 – 1453 d.C.</div></div></div>
+      <div class="era-grid">
+        <div class="era-field" data-editable contenteditable="false"><h4>Contexto social</h4><p>Persistía una alta mortalidad infantil y economías rurales que incorporaban a los niños tempranamente al trabajo agrícola, artesanal o doméstico. Los compromisos matrimoniales podían pactarse desde edades muy tempranas.</p></div>
+        <div class="era-field" data-editable contenteditable="false"><h4>Contexto cultural</h4><p>Fuerte influencia de la Iglesia católica. Según el historiador Philippe Ariès, no existía un "sentimiento de infancia" diferenciado: en cuanto el niño podía valerse por sí mismo, alrededor de los 7 años, se integraba al mundo adulto, vistiendo y trabajando junto a los adultos.</p></div>
+        <div class="era-field" data-editable contenteditable="false"><h4>Concepciones de niño, niña y niñez</h4><p>La niñez se entendía como una etapa de fragilidad marcada por la idea religiosa del pecado original, que debía corregirse mediante la disciplina y la instrucción moral.</p></div>
+        <div class="era-field" data-editable contenteditable="false"><h4>Autores y aportes</h4><ul>
+          <li><strong>Philippe Ariès</strong> — su obra sobre la vida familiar en el Antiguo Régimen es la referencia clave para comprender la ausencia de un concepto diferenciado de infancia en este periodo.</li>
+          <li><strong>Santo Tomás de Aquino</strong> — aportó una visión escolástica centrada en la formación moral y espiritual del niño.</li>
+        </ul></div>
+        <div class="era-field full" data-editable contenteditable="false"><h4>Transformaciones e hitos relevantes</h4><p>Aparición de los gremios y el aprendizaje de oficios desde edades tempranas; expansión de la catequesis como forma de instrucción infantil.</p></div>
+        <div class="era-field full" data-editable contenteditable="false"><h4>Reflexión crítica</h4><p>El niño no tenía estatus jurídico ni social propio; su reconocimiento e integración dependían de su capacidad de incorporarse cuanto antes al mundo y a las labores de los adultos.</p></div>
+      </div>
+    </div>
+
+    <div class="era-panel" data-era="moderna">
+      <div class="era-head"><span class="era-dot"></span><div><h3 data-editable contenteditable="false">Edad Moderna</h3><div class="era-range" data-editable contenteditable="false">Siglos XV – XVIII</div></div></div>
+      <div class="era-grid">
+        <div class="era-field" data-editable contenteditable="false"><h4>Contexto social</h4><p>Se consolida la familia nuclear burguesa y aumenta el cuidado y la atención parental hacia los hijos. Surgen instituciones escolares organizadas por edades y niveles.</p></div>
+        <div class="era-field" data-editable contenteditable="false"><h4>Contexto cultural</h4><p>Con la Ilustración y el racionalismo comienza a reconocerse la infancia como una etapa particular del desarrollo humano, con necesidades educativas y afectivas propias, distintas a las del adulto.</p></div>
+        <div class="era-field" data-editable contenteditable="false"><h4>Concepciones de niño, niña y niñez</h4><p>Emerge la idea del niño como un ser en formación, con una naturaleza propia que merece protección, cuidado y una educación específica y progresiva.</p></div>
+        <div class="era-field" data-editable contenteditable="false"><h4>Autores y aportes</h4><ul>
+          <li><strong>John Locke</strong> — propuso la idea de la mente infantil como una "tabla rasa", moldeable a través de la experiencia y la educación.</li>
+          <li><strong>Jean-Jacques Rousseau</strong> — en <em>Emilio, o de la educación</em> (1762) defendió que la infancia tiene un valor en sí misma y que la educación debe respetar el desarrollo natural del niño.</li>
+          <li><strong>Johann Heinrich Pestalozzi</strong> — impulsó una pedagogía centrada en el niño y en el aprendizaje a través de la experiencia sensible.</li>
+        </ul></div>
+        <div class="era-field full" data-editable contenteditable="false"><h4>Transformaciones e hitos relevantes</h4><p>Expansión de la escolarización; publicación de los primeros tratados pedagógicos modernos; cambios en la vestimenta, los juguetes y los espacios destinados a los niños, que comienzan a diferenciarse del mundo adulto.</p></div>
+        <div class="era-field full" data-editable contenteditable="false"><h4>Reflexión crítica</h4><p>Esta época sienta las bases filosóficas que, siglos después, permitirían el reconocimiento jurídico de los niños y las niñas como sujetos de derechos, camino que culminaría en instrumentos como la Convención sobre los Derechos del Niño (1989).</p></div>
+      </div>
+    </div>
+
+    <div class="closing">
+      <h3 data-editable contenteditable="false">Reflexión general</h3>
+      <p data-editable contenteditable="false">Al recorrer estas tres etapas se evidencia que la infancia no es una categoría natural o fija, sino una construcción social y cultural. Pasar de ver al niño como propiedad del padre, a un ser integrado tempranamente al mundo adulto sin diferenciación, y finalmente a un sujeto con una naturaleza y necesidades propias, permite comprender cómo se fue gestando el camino hacia el reconocimiento actual de los niños y las niñas como sujetos de derechos, un proceso que sigue en construcción en distintos contextos sociales y educativos.</p>
+    </div>
+
+    <div class="references">
+      <h3 data-editable contenteditable="false">Referencias bibliográficas</h3>
+      <ol data-editable contenteditable="false">
+        <li>Ariès, P. (1987). <em>El niño y la vida familiar en el Antiguo Régimen</em>. Taurus.</li>
+        <li>Benchimol, K., Bidese, M., Gentile, M., Keserman, A., Juárez, M., Sokolowicz, A., Zapiola, M., Amado, G., &amp; Espínola, C. (2023). <em>Infancias en plural</em>. Universidad Nacional General de Sarmiento. https://biblioteca-repositorio.clacso.edu.ar/bitstream/CLACSO/249094/1/Infancias-en-plural.pdf</li>
+        <li>Chica, F., &amp; Rasero, L. (2012). Construcción social de la infancia y el reconocimiento de sus competencias. <em>Itinerario Educativo: Revista de la Facultad de Educación</em>, 26(60), 75–96. https://dialnet.unirioja.es/servlet/articulo?codigo=6280191</li>
+        <li>Locke, J. (1990). <em>Pensamientos sobre la educación</em>. Akal. (Obra original publicada en 1693).</li>
+        <li>Pedraza Ramírez, C. E., Morales Mantilla, S. M., Gómez Bohórquez, P. T., Rodríguez Bernal, Y., Pérez Ospina, J. M., &amp; Villamizar Parada, N. J. (2022). <em>Representaciones sobre la educación infantil: Infancias en contingencia</em>. Sello Editorial UNAD. https://doi.org/10.22490/9789586518710</li>
+        <li>Rousseau, J. J. (1990). <em>Emilio, o de la educación</em>. Alianza Editorial. (Obra original publicada en 1762).</li>
+      </ol>
+      <div class="edit-hint" style="margin-top:14px;">Modo edición activo — escribe directamente sobre cualquier texto de la página; en la lista de referencias, presiona Enter para añadir una nueva.</div>
+    </div>
+  </section>
+
+  <section class="panel" id="panel-reto3"><div class="placeholder-panel" data-editable contenteditable="false"><h3>Infancias en perspectiva</h3><p>Esta pestaña se desarrollará en el Reto 3 del curso.</p></div></section>
+  <section class="panel" id="panel-reto4"><div class="placeholder-panel" data-editable contenteditable="false"><h3>Comprendiendo las realidades y desafíos de las infancias</h3><p>Esta pestaña se desarrollará en el Reto 4 del curso.</p></div></section>
+  <section class="panel" id="panel-reto5"><div class="placeholder-panel" data-editable contenteditable="false"><h3>Voces para la transformación de las infancias</h3><p>Esta pestaña se desarrollará en el Reto 5 del curso.</p></div></section>
+
+</main>
+
+<footer>
+  <div class="wrap" data-editable contenteditable="false">Universidad Nacional Abierta y a Distancia (UNAD) · Curso Infancias: Historias y Perspectivas · Código 514517</div>
+</footer>
+
+</div><!-- /siteRoot -->
+
+<div class="edit-toolbar">
+  <button class="btn-ghost" id="btnDownload" type="button">⬇ Descargar página final</button>
+  <button class="btn-ghost" id="btnExit" type="button">Salir sin guardar</button>
+  <button class="btn-primary" id="btnEdit" type="button">✎ Editar página</button>
+</div>
+<div class="toast" id="toast">Cambios guardados</div>
+
+<script>
+(function(){
+  const STORAGE_KEY = 'infanciasReto2_siteHTML';
+  const siteRoot = document.getElementById('siteRoot');
+  const body = document.body;
+  const btnEdit = document.getElementById('btnEdit');
+  const btnDownload = document.getElementById('btnDownload');
+  const btnExit = document.getElementById('btnExit');
+  const toast = document.getElementById('toast');
+
+  function showToast(msg){
+    toast.textContent = msg;
+    toast.classList.add('show');
+    setTimeout(()=> toast.classList.remove('show'), 2200);
+  }
+
+  function isEditing(){ return body.classList.contains('edit-mode'); }
+
+  function closeAllModals(){
+    siteRoot.querySelectorAll('.member-modal-overlay.open').forEach(o => o.classList.remove('open'));
+  }
+
+  function updateScrollBtns(overlay){
+    const bio = overlay.querySelector('.modal-bio');
+    const up = overlay.querySelector('.scroll-up');
+    const down = overlay.querySelector('.scroll-down');
+    if(!bio || !up || !down) return;
+    up.disabled = bio.scrollTop <= 0;
+    down.disabled = bio.scrollTop + bio.clientHeight >= bio.scrollHeight - 1;
+  }
+
+  function bindScrollHold(btn, bio, direction){
+    let intervalId = null;
+    const step = () => { bio.scrollBy({ top: direction * 46, behavior: 'smooth' }); };
+    const start = (e) => {
+      e.preventDefault();
+      step();
+      intervalId = setInterval(step, 220);
+    };
+    const stop = () => { if(intervalId){ clearInterval(intervalId); intervalId = null; } };
+    btn.addEventListener('mousedown', start);
+    btn.addEventListener('touchstart', start, { passive:false });
+    ['mouseup','mouseleave','touchend','touchcancel'].forEach(evt => btn.addEventListener(evt, stop));
+  }
+
+  function bindInteractivity(){
+    // Tabs
+    const tabBtns = siteRoot.querySelectorAll('.tab-btn');
+    const panels = siteRoot.querySelectorAll('.panel');
+    tabBtns.forEach(btn => {
+      btn.onclick = () => {
+        if(isEditing()) return;
+        tabBtns.forEach(b => b.classList.remove('active'));
+        panels.forEach(p => p.classList.remove('active'));
+        btn.classList.add('active');
+        siteRoot.querySelector('#panel-' + btn.dataset.tab).classList.add('active');
+      };
+    });
+
+    // Timeline eras
+    const eraBtns = siteRoot.querySelectorAll('.era-btn');
+    const eraPanels = siteRoot.querySelectorAll('.era-panel');
+    eraBtns.forEach(btn => {
+      btn.onclick = () => {
+        if(isEditing()) return;
+        eraBtns.forEach(b => b.classList.remove('active'));
+        eraPanels.forEach(p => p.classList.remove('active'));
+        btn.classList.add('active');
+        siteRoot.querySelector('.era-panel[data-era="' + btn.dataset.era + '"]').classList.add('active');
+      };
+    });
+
+    // Photo upload
+    siteRoot.querySelectorAll('.avatar-wrap').forEach(wrap => {
+      const btn = wrap.querySelector('.photo-btn');
+      const input = wrap.querySelector('.photo-input');
+      const avatar = wrap.querySelector('.avatar');
+      btn.onclick = () => { if(isEditing()) input.click(); };
+      input.onchange = (e) => {
+        const file = e.target.files[0];
+        if(!file) return;
+        const reader = new FileReader();
+        reader.onload = (ev) => {
+          const img = new Image();
+          img.onload = () => {
+            const canvas = document.createElement('canvas');
+            const size = 240;
+            canvas.width = size; canvas.height = size;
+            const ctx = canvas.getContext('2d');
+            const scale = Math.max(size/img.width, size/img.height);
+            const w = img.width*scale, h = img.height*scale;
+            ctx.drawImage(img, (size-w)/2, (size-h)/2, w, h);
+            const dataUrl = canvas.toDataURL('image/jpeg', 0.85);
+            avatar.style.backgroundImage = 'url(' + dataUrl + ')';
+            avatar.textContent = '';
+          };
+          img.src = ev.target.result;
+        };
+        reader.readAsDataURL(file);
+      };
+    });
+
+    // Member modals: open
+    siteRoot.querySelectorAll('.role-pill').forEach(pill => {
+      pill.onclick = () => {
+        const overlay = siteRoot.querySelector('#' + pill.dataset.modalTarget);
+        if(!overlay) return;
+        const avatar = pill.closest('.member').querySelector('.avatar');
+        const modalAvatar = overlay.querySelector('.modal-avatar');
+        modalAvatar.style.backgroundImage = avatar.style.backgroundImage || 'none';
+        closeAllModals();
+        overlay.classList.add('open');
+        const bio = overlay.querySelector('.modal-bio');
+        if(bio) bio.scrollTop = 0;
+        updateScrollBtns(overlay);
+      };
+    });
+
+    // Member modals: close + sync pill label with edited role text + scroll controls
+    siteRoot.querySelectorAll('.member-modal-overlay').forEach(overlay => {
+      const roleField = overlay.querySelector('.modal-role');
+      const pill = siteRoot.querySelector('.role-pill[data-modal-target="' + overlay.id + '"]');
+      const label = pill ? pill.querySelector('.role-label') : null;
+      const bio = overlay.querySelector('.modal-bio');
+      const upBtn = overlay.querySelector('.scroll-up');
+      const downBtn = overlay.querySelector('.scroll-down');
+
+      const close = () => overlay.classList.remove('open');
+      overlay.querySelector('.modal-close').onclick = close;
+      overlay.addEventListener('click', (e) => { if(e.target === overlay) close(); });
+
+      if(roleField && label){
+        roleField.addEventListener('input', () => {
+          label.textContent = roleField.textContent.trim() || label.textContent;
+        });
+      }
+
+      if(bio){
+        bio.addEventListener('scroll', () => updateScrollBtns(overlay));
+        bio.addEventListener('input', () => updateScrollBtns(overlay));
+      }
+      if(upBtn && bio) bindScrollHold(upBtn, bio, -1);
+      if(downBtn && bio) bindScrollHold(downBtn, bio, 1);
+    });
+
+    document.addEventListener('keydown', (e) => { if(e.key === 'Escape') closeAllModals(); });
+  }
+
+  function setEditable(state){
+    siteRoot.querySelectorAll('[data-editable]').forEach(el => el.setAttribute('contenteditable', state));
+  }
+
+  function restoreFromStorage(){
+    try{
+      const saved = localStorage.getItem(STORAGE_KEY);
+      if(saved){ siteRoot.innerHTML = saved; }
+    }catch(e){ console.warn('No se pudo restaurar el borrador guardado', e); }
+    bindInteractivity();
+  }
+
+  function saveDraft(){
+    try{
+      localStorage.setItem(STORAGE_KEY, siteRoot.innerHTML);
+      showToast('Borrador guardado en este navegador');
+    }catch(e){
+      showToast('No se pudo guardar (almacenamiento lleno)');
+    }
+  }
+
+  function downloadFinal(){
+    const clone = document.documentElement.cloneNode(true);
+    clone.querySelectorAll('[contenteditable]').forEach(el => el.setAttribute('contenteditable','false'));
+    clone.querySelector('body').classList.remove('edit-mode');
+    clone.querySelectorAll('.member-modal-overlay.open').forEach(o => o.classList.remove('open'));
+    const html = '<!DOCTYPE html>\n' + clone.outerHTML;
+    const blob = new Blob([html], {type:'text/html'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = 'construccion-historica-infancias.html';
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    showToast('Página final descargada');
+  }
+
+  btnEdit.addEventListener('click', () => {
+    const entering = !isEditing();
+    if(entering){
+      body.classList.add('edit-mode');
+      setEditable(true);
+      btnEdit.textContent = '💾 Guardar borrador';
+    } else {
+      setEditable(false);
+      saveDraft();
+      body.classList.remove('edit-mode');
+      btnEdit.textContent = '✎ Editar página';
+    }
+  });
+
+  btnDownload.addEventListener('click', downloadFinal);
+
+  btnExit.addEventListener('click', () => {
+    setEditable(false);
+    body.classList.remove('edit-mode');
+    btnEdit.textContent = '✎ Editar página';
+  });
+
+  document.addEventListener('DOMContentLoaded', restoreFromStorage);
+  if(document.readyState !== 'loading') restoreFromStorage();
+})();
+</script>
+
+</body>
+</html>
